@@ -1,0 +1,3 @@
+# The name of the input VCF file. 
+input: "toy.vcf"
+
