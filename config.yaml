@@ -1,11 +1,16 @@
 # The name of the input VCF file. 
-input: "toy.vcf"
+input: "run/testing/subset.vcf.gz"
 
-analysis_name: "testing"
+analysis_name: "pipe"
 
-samples:
-    - S_Yoruba-1
-    - S_Yoruba-2
-    - S_French-1
-    - S_French-2
+model:
+    name: "2Pop"
+    tree: ""
+    populations:
+        Yoruba:
+            - S_Yoruba-1
+            - S_Yoruba-2
+        French:
+            - S_French-1
+            - S_French-2
 
