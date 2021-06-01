@@ -101,10 +101,67 @@ rule Remove_Genic_Regions:
 		slop = rules.Create_Genic_Slop.output.slop
 	output: regions = "run/{name}/filtered_regions_for_sampling.bed"
 	shell: """
-		bedtools intersect -v -a {input.regions} -b {input.slop} > {output.regions}
+		bedtools intersect -v -header -a {input.regions} -b {input.slop} > {output.regions}
+		"""
+
+rule Stat_Sampler:
+	input: stat = rules.Remove_Genic_Regions.output.regions
+	params: loci = config["n_loci"]
+	output: target_loci_file = "run/{name}/target_loci.bed"
+	shell: """
+		stat_sampler.py \
+			--statistic-file {input.stat}\
+			--out {output.target_loci_file}\
+			--sampling-scheme random\
+			--sample-size {params.loci}\
+			--calc-statistic windowed-weir-fst
+		"""
+
+rule Split_VCF:
+	input: 
+		vcf = rules.Filter_VCF.output.vcf,
+		target_loci_file = rules.Stat_Sampler.output.target_loci_file
+	output:
+		[f"run/{{name}}/Sampled_nonmissing/Sample_{i}.vcf" for i in range(config["n_loci"])]
+	shell: """
+		vcf_split_pysam.py \
+			--vcf {input.vcf}\
+			--bed {input.target_loci_file}\
+			--out-prefix run/{wildcards.name}/Sampled_nonmissing/Sample_\
+			--remove-indels\
+			--remove-multi\
+			--bed-column-index 2,3,1\
+			--informative-count 2
+	"""
+
+rule Four_Gamete_Test:
+	input: loci_vcf = "run/{name}/Sampled_nonmissing/Sample_{loci}.vcf"
+	output: loci_fgt = "run/{name}/four_gamete_compatible/Sample_{loci}.txt"
+	shell: """
+		vcf_four_gamete.py\
+			--vcf {input.loci_vcf}\
+			--out {output.loci_fgt}\
+			--fourgcompat\
+			--reti\
+			--right\
+			--numinf 2
+	"""
+
+rule Loci_VCF_to_IMa:
+	input: 
+		vcfs = expand("run/{{name}}/four_gamete_compatible/Sample_{loci}.txt", loci = range(config["n_loci"])),
+		model = rules.Create_Model_File.output.model
+	params: model_name = config["model"]["name"]
+	output: ima3 = "run/{name}/ima_all_loci.ima.u"
+	shell: """
+		vcf_to_ima.py \
+			--vcfs {input.vcfs}\
+			--model-file {input.model}\
+			--model {params.model_name}\
+			--out {output.ima3}
 		"""
 
 rule test:
-	input: expand("run/{name}/filtered_regions_for_sampling.bed", name = config["analysis_name"])
+	input: expand("run/{name}/ima_all_loci.ima.u", name = config["analysis_name"])
 
 
