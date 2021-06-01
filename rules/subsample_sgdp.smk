@@ -1,6 +1,3 @@
-import pandas as pd
-
-configfile: "config.yaml"
 
 rule DownloadChromSizes:
     output: sizes = "data/hg19.chrom.sizes"
