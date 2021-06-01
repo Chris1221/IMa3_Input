@@ -3,6 +3,8 @@ input: "run/testing/subset.vcf.gz"
 
 analysis_name: "pipe"
 
+n_loci: 200
+
 model:
     name: "2Pop"
     tree: ""

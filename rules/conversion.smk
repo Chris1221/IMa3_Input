@@ -124,13 +124,13 @@ rule Split_VCF:
 	output:
 		[f"run/{{name}}/Sampled_nonmissing/Sample_{i}.vcf" for i in range(config["n_loci"])]
 	shell: """
-		vcf_split_pysam.py \
-			--vcf {input.vcf}\
+		python $(which vcf_split_pysam.py) \
+			--vcfs {input.vcf}\
 			--bed {input.target_loci_file}\
 			--out-prefix run/{wildcards.name}/Sampled_nonmissing/Sample_\
 			--remove-indels\
 			--remove-multi\
-			--bed-column-index 2,3,1\
+			--bed-column-index 1,2,0\
 			--informative-count 2
 	"""
 
@@ -139,7 +139,7 @@ rule Four_Gamete_Test:
 	output: loci_fgt = "run/{name}/four_gamete_compatible/Sample_{loci}.txt"
 	shell: """
 		vcf_four_gamete.py\
-			--vcf {input.loci_vcf}\
+			--vcfs {input.loci_vcf}\
 			--out {output.loci_fgt}\
 			--fourgcompat\
 			--reti\
@@ -160,8 +160,3 @@ rule Loci_VCF_to_IMa:
 			--model {params.model_name}\
 			--out {output.ima3}
 		"""
-
-rule test:
-	input: expand("run/{name}/ima_all_loci.ima.u", name = config["analysis_name"])
-
-
