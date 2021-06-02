@@ -47,3 +47,9 @@ snakemake run -j20
 ```
 
 The `inference_parameters` section of the configuration file is flexible. If you include an option here, it will be given as a flag to `IMa3`. 
+
+## Notes
+
+1. `IMa3` is not easily installable, so you will have to go through the process yourself by following the [official guide](https://github.com/jodyhey/IMa3). Tell the pipeline where your installation lives by editing the `-ima3_path` variable in the `inference_paramters` section of the config file (the leading dash is to allow for *two* dashes when executing the script). 
+2.  You can run a test version of the pipeline on 10k variants from SGDP by not editing the configuration file. This is a good way to check that all dependencies have installed correctly. 
+3.  A description of IMa3's extensive list of options is beyond the scope of this project, please check out the documentation PDF (and good luck...).
