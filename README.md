@@ -1,4 +1,5 @@
-# Input generator for IMa3
+# Input generator for IMa3 [![<ORG_NAME>](https://circleci.com/gh/Chris1221/IMa3_Input.svg?style=svg)](<LINK>)
+
 
 This is a [Snakemake](https://snakemake.readthedocs.io/en/stable/) pipeline to convert genetic variant information in VCF format to a format used for inference in [IMa3](https://github.com/jodyhey/IMa3). Essentially, this is an automated application of the [Popgen Pipeline Platform](https://github.com/jaredgk/PPP) for a specific application. 
 
