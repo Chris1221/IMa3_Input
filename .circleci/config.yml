@@ -1,0 +1,40 @@
+version: 1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7-stretch
+    working_directory: /home/circleci/IMa3_Input
+    steps:
+      - checkout
+      - restore_cache:
+              keys: 
+                - ima-{{ checksum "env.yml" }}
+      - run:
+          name: Install conda and dependencies
+          command: |
+            sudo ln -s /bin/gzip /usr/bin/gzip # silly workaround
+            sudo ln -s /bin/tar /bin/gtar # silly workaround
+            sudo ln -s /usr/include/zlib.h /usr/local/include/ # yet another silly workaround
+            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+            if [ ! -d "$HOME/miniconda/" ]; then bash miniconda.sh -b -p $HOME/miniconda; fi
+            export PATH="$HOME/miniconda/bin:$PATH"
+            hash -r
+            conda config --set always_yes yes --set changeps1 no
+            conda update -q conda
+            conda config --add channels conda-forge
+            conda config --add channels bioconda
+            conda info -a
+            if [ ! -d "$HOME/miniconda/envs/ima3_input" ]; then conda install -c conda-forge mamba; fi
+            if [ ! -d "$HOME/miniconda/envs/ima3_input" ]; then mamba env create -q --file=envs/avocato.yml; fi
+            source activate ima3_input
+      - save_cache:
+          key: ima-{{ checksum "env.yml" }}
+          paths:
+                  - "/home/circleci/miniconda"
+      - run:
+          name: Run python tests
+          command: |
+            export PATH="$HOME/miniconda/bin:$PATH"
+            source activate ima3_input
+            snakemake -j1 input

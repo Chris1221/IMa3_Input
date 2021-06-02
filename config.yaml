@@ -1,12 +1,12 @@
 # The name of the input VCF file. 
-input: "run/testing/subset.vcf.gz"
+input: test/test.vcf.gz
 
-analysis_name: "pipe"
+analysis_name: test
 
-n_loci: 200
+n_loci: 10
 
 model:
-    name: "2Pop"
+    name: 2Pop
     tree: ""
     populations:
         Yoruba:
@@ -16,3 +16,15 @@ model:
             - S_French-1
             - S_French-2
 
+stat_regions_to_sample: 100
+
+inference_parameters:
+    # Maximum population size parameter
+    q: 30000
+    m: 2   
+    t: 300000
+    # Generation time in years
+    u: 29
+    L: 2.0
+    b: 1.0
+    -ima-path: /well/gerton/ccole/repos/IMa3/IMa3

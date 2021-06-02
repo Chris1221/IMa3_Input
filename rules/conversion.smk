@@ -66,6 +66,7 @@ rule Filter_for_Four_Gamete_Test:
 		vcf = rules.Filter_VCF.output.vcf,
 		index = rules.Index_Filter_VCF.output.index,
 		stat_file = rules.VCF_Calc.output.regions
+	params: stat_count = config["stat_regions_to_sample"]
 	output: regions = "run/{name}/regions_for_sampling.bed"
 	shell: """
 		informative_loci_filter.py \
@@ -75,7 +76,7 @@ rule Filter_for_Four_Gamete_Test:
 			--minsites 3\
 			--keep-full-line\
 			--out {output.regions}\
-			--randcount 5000\
+			--randcount {params.stat_count}\
 			--remove-multi
 		"""
 
@@ -125,7 +126,7 @@ rule Split_VCF:
 		[f"run/{{name}}/Sampled_nonmissing/Sample_{i}.vcf" for i in range(config["n_loci"])]
 	shell: """
 		python $(which vcf_split_pysam.py) \
-			--vcfs {input.vcf}\
+			--vcf {input.vcf}\
 			--bed {input.target_loci_file}\
 			--out-prefix run/{wildcards.name}/Sampled_nonmissing/Sample_\
 			--remove-indels\
