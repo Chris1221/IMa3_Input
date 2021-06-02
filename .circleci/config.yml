@@ -26,7 +26,7 @@ jobs:
             conda config --add channels bioconda
             conda info -a
             if [ ! -d "$HOME/miniconda/envs/ima3_input" ]; then conda install -c conda-forge mamba; fi
-            if [ ! -d "$HOME/miniconda/envs/ima3_input" ]; then mamba env create -q --file=envs/avocato.yml; fi
+            if [ ! -d "$HOME/miniconda/envs/ima3_input" ]; then mamba env create -q --file=env.yml; fi
             source activate ima3_input
       - save_cache:
           key: ima-{{ checksum "env.yml" }}
